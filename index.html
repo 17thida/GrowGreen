@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grow Green : ชุบชูใจ</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Prompt',sans-serif;
+}
+
+body{
+background:#eef6ff;
+display:flex;
+justify-content:center;
+padding:20px;
+}
+
+.phone{
+width:390px;
+min-height:844px;
+background:white;
+border-radius:35px;
+overflow:hidden;
+box-shadow:0 10px 30px rgba(0,0,0,.15);
+position:relative;
+display: flex;
+flex-direction: column;
+}
+
+.content-area {
+flex: 1;
+overflow-y: auto;
+padding-bottom: 90px;
+}
+
+.tab-view {
+display: none;
+}
+.tab-view.active-view {
+display: block;
+}
+
+.header{
+padding:20px;
+background:linear-gradient(180deg, #f5f8df, #e9f6d4);
+text-align:center;
+position: relative;
+}
+
+.exit{
+position:absolute;
+right:20px;
+top:20px;
+background:#ff6b81;
+color:white;
+border:none;
+padding:10px 16px;
+border-radius:20px;
+cursor:pointer;
+font-weight: bold;
+font-size: 14px;
+}
+
+.title{
+font-size:32px;
+font-weight:bold;
+margin-top:30px;
+color:#3d3d3d;
+}
+
+.subtitle{
+margin-top:5px;
+font-size:15px;
+color:#666;
+}
+
+/* ปรับพื้นที่แสดงผลต้นไม้ SVG ให้สมดุล */
+.tree-container{
+width: 140px;
+height: 140px;
+margin: 15px auto;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: transform 0.3s;
+}
+
+.progress-card{
+background:white;
+padding:15px;
+border-radius:20px;
+margin:15px;
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+text-align: center;
+}
+
+.bar{
+height:20px;
+background:#eee;
+border-radius:20px;
+overflow:hidden;
+margin-top:10px;
+}
+
+.fill{
+width: 16.66%;
+height:100%;
+background:linear-gradient(90deg, #7cc95d, #a3e4d7);
+transition: width 0.5s ease;
+}
+
+.daily-btn {
+background: #f1c40f;
+color: #333;
+border: none;
+padding: 10px 20px;
+border-radius: 15px;
+font-weight: bold;
+font-size: 16px;
+cursor: pointer;
+margin: 5px 15px 15px 15px;
+box-shadow: 0 4px 10px rgba(241, 196, 15, 0.3);
+}
+
+.card{
+margin:15px;
+padding:20px;
+border-radius:20px;
+cursor:pointer;
+transition:.2s;
+display: flex;
+align-items: center;
+gap: 15px;
+}
+
+.card:hover{
+transform:scale(1.02);
+}
+
+.memory{ background:#f1e7ff; border-left: 8px solid #b19ffb; }
+.health{ background:#e7f7d8; border-left: 8px solid #7cc95d; }
+.motivation{ background:#ffe3ea; border-left: 8px solid #ff6b81; }
+
+.card h2 { font-size: 22px; color: #333; }
+.card p { color: #666; font-size: 15px; }
+
+.nav{
+position:absolute;
+bottom:0;
+width:100%;
+background:white;
+display:flex;
+justify-content:space-around;
+padding:15px;
+border-top:1px solid #ddd;
+z-index: 10;
+}
+
+.nav button{
+background:none;
+border:none;
+font-size:15px;
+cursor:pointer;
+color: #666;
+}
+
+.nav button.active {
+color: #7cc95d;
+font-weight: bold;
+}
+
+.popup-overlay {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0,0,0,0.6);
+display: none;
+justify-content: center;
+align-items: center;
+z-index: 100;
+}
+
+.popup-box {
+width: 90%;
+max-height: 85%;
+overflow-y: auto;
+background: white;
+padding: 25px;
+border-radius: 25px;
+text-align: center;
+box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+}
+
+.popup-box h2 {
+margin-bottom: 10px;
+color: #333;
+font-size: 26px;
+}
+
+.game-container {
+margin: 20px 0;
+min-height: 150px;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+}
+
+.proverb-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 12px;
+width: 100%;
+}
+.proverb-card {
+padding: 15px 10px;
+background: #f0ebff;
+border: 2px solid #b19ffb;
+border-radius: 12px;
+font-size: 16px;
+font-weight: bold;
+color: #4a27c1;
+cursor: pointer;
+user-select: none;
+min-height: 60px;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.proverb-card.selected {
+background: #b19ffb;
+color: white;
+}
+.proverb-card.matched {
+background: #d4efdf;
+border-color: #27ae60;
+color: #1e8449;
+cursor: default;
+}
+
+.wheel-box {
+font-size: 70px;
+margin-bottom: 10px;
+animation-duration: 0.5s;
+animation-iteration-count: infinite;
+animation-timing-function: linear;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.popup-btn {
+background: #7cc95d;
+color: white;
+border: none;
+padding: 12px 25px;
+border-radius: 25px;
+font-size: 18px;
+cursor: pointer;
+font-weight: bold;
+width: 100%;
+margin-top: 15px;
+box-shadow: 0 4px 10px rgba(124, 201, 93, 0.3);
+}
+.popup-btn:disabled {
+background: #ccc;
+cursor: not-allowed;
+box-shadow: none;
+}
+.close-txt {
+margin-top: 15px;
+color: #888;
+cursor: pointer;
+text-decoration: underline;
+font-size: 15px;
+display: inline-block;
+}
+
+.p-20 { padding: 20px; }
+</style>
+</head>
+
+<body>
+
+<div class="phone">
+
+<div class="content-area">
+  
+  <div id="view-home" class="tab-view active-view">
+    <div class="header">
+      <button class="exit" onclick="exitGame()">พักสายตา</button>
+      <h1 class="title">Grow Green</h1>
+      <p class="subtitle">พื้นที่เพาะความสุขและเติมพลังบวกให้ใจ</p>
+      <!-- เปลี่ยนจากอิโมจิธรรมดาเป็นกล่องใส่กราฟิก SVG -->
+      <div class="tree-container" id="tree-graphic"></div>
+    </div>
+
+    <div class="progress-card">
+      <h3 id="tree-level" style="font-size: 20px;">เลเวลต้นไม้ของคุณ: ระดับ 1</h3>
+      <div class="bar"><div class="fill" id="progress-bar"></div></div>
+      <p style="margin-top:10px; font-weight: bold; color: #444;" id="leaf-count">5 / 30 ใบ</p>
+    </div>
+
+    <button class="daily-btn" id="daily-water-btn" onclick="dailyWatering()">💧 รดน้ำใจประจำวัน (+2 ใบไม้)</button>
+
+    <div class="card memory" onclick="openGame('memory')">
+      <div style="font-size: 40px;">🧠</div>
+      <div>
+        <h2>ลับสมองประลองคำ</h2>
+        <p>จับคู่คำสุภาษิตและคำพังเพยไทย</p>
+      </div>
+    </div>
+
+    <div class="card health" onclick="openGame('health')">
+      <div style="font-size: 40px;">🏃‍♂️</div>
+      <div>
+        <h2>ขยับกายวันละนิด</h2>
+        <p>สุ่มท่ากายบริหารยืดเส้นสายคลายเหนื่อย</p>
+      </div>
+    </div>
+
+    <div class="card motivation" onclick="openGame('motivation')">
+      <div style="font-size: 40px;">🔮</div>
+      <div>
+        <h2>เซียมซีเติมพลังใจ</h2>
+        <p>เขย่าติ้วรับคำอวยพรและเลขนำโชคดีๆ</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-garden" class="tab-view p-20">
+    <h2>🌳 สวนสะสมของคุณ</h2>
+    <p style="color:#666; margin-bottom:20px;">ต้นไม้ที่งอกเงยจากความใส่ใจตัวเองในทุกๆ วัน</p>
+    <div style="background:#f4f9f0; border-radius:20px; padding:30px; text-align:center; border: 2px dashed #7cc95d;">
+      <!-- กล่องใส่กราฟิกสวนสะสม SVG -->
+      <div class="tree-container" id="garden-tree-graphic" style="width:160px; height:160px;"></div>
+      <h3 id="garden-title" style="margin-top:10px; font-size: 22px;">ต้นกล้าแห่งความสุข</h3>
+      <p style="color:#888; font-size:14px; margin-top: 5px;">เพาะพูนด้วยกิจกรรมดีๆ ในทุกวัน</p>
+    </div>
+  </div>
+
+  <div id="view-achieve" class="tab-view p-20">
+    <h2>⭐ เหรียญรางวัลความตั้งใจ</h2>
+    <p style="color:#666; margin-bottom:20px;">ความสำเร็จเล็กๆ ที่คุณทำได้</p>
+     
+    <div style="background: #fff8e7; padding:15px; border-radius:15px; margin-bottom:15px; display:flex; align-items:center; gap:15px; border:1px solid #f1c40f;">
+      <div style="font-size:35px;">🏅</div>
+      <div style="text-align:left;">
+        <h4 style="font-size:18px;">จุดเริ่มต้นคนรักตัวเอง</h4>
+        <p style="font-size:14px; color:#666;">ก้าวแรกสู่การดูแลสุขภาพกายและใจ</p>
+      </div>
+    </div>
+
+    <div id="badge-2" style="background: #f9f9f9; opacity:0.5; padding:15px; border-radius:15px; margin-bottom:15px; display:flex; align-items:center; gap:15px; border:1px solid #ddd;">
+      <div style="font-size:35px;">🥈</div>
+      <div style="text-align:left;">
+        <h4 style="font-size:18px;">เริ่มแข็งแรงและใจฟู</h4>
+        <p style="font-size:14px; color:#666;">สะสมกิ่งก้านครบ 15 ใบ</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-settings" class="tab-view p-20">
+    <h2>⚙️ ตั้งค่าและช่วยเหลือ</h2>
+    <p style="color:#666; margin-bottom:20px;">ปรับแต่งการแสดงผลให้เข้ากับคุณ</p>
+    <div style="background:#fff; border:1px solid #ddd; border-radius:15px; padding:20px; text-align:left; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+      <p style="font-size:18px; font-weight:bold;">ขนาดตัวอักษรหน้าจอ</p>
+      <button style="padding:5px 15px; font-weight:bold; background:#7cc95d; color:white; border:none; border-radius:10px;">แบบสบายตา (Easy Reading)</button>
+    </div>
+    <button class="popup-btn" style="background:#ff6b81;" onclick="leaves=5; currentLevel=1; updateUI(); document.getElementById('daily-water-btn').disabled=false; document.getElementById('daily-water-btn').innerText='💧 รดน้ำใจประจำวัน (+2 ใบไม้)'; switchTab('home'); alert('รีเซ็ตระบบเริ่มต้นใหม่แล้วค่ะ');">รีเซ็ตคะแนนเริ่มต้นใหม่</button>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button id="btn-home" class="active" onclick="switchTab('home')"><span style="font-size:20px;">🏠</span><br>หน้าหลัก</button>
+  <button id="btn-garden" onclick="switchTab('garden')"><span style="font-size:20px;">🌳</span><br>สวนของฉัน</button>
+  <button id="btn-achieve" onclick="switchTab('achieve')"><span style="font-size:20px;">⭐</span><br>รางวัล</button>
+  <button id="btn-settings" onclick="switchTab('settings')"><span style="font-size:20px;">⚙️</span><br>ตั้งค่า</button>
+</div>
+
+<div class="popup-overlay" id="game-popup">
+  <div class="popup-box">
+    <h2 id="popup-title">หัวข้อกิจกรรม</h2>
+    <div class="game-container" id="game-content-area"></div>
+    <button class="popup-btn" id="action-btn" onclick="completeActivity()" disabled>บันทึกและรับใบไม้</button>
+    <br>
+    <span class="close-txt" onclick="closePopup()">กลับหน้าหลัก</span>
+  </div>
+</div>
+
+</div>
+
+<script>
+let leaves = 5;
+const maxLeaves = 30;
+let currentLevel = 1;
+let selectedProverbCard = null;
+
+// โค้ดกราฟิก SVG ต้นไม้ระดับที่ 1 (ต้นกล้าน่ารัก อบอุ่นสมวัย)
+const svgLevel1 = `
+<svg viewBox="0 0 100 100" width="100%" height="100%">
+  <!-- ดิน -->
+  <path d="M20 80 Q50 75 80 80 Q50 85 20 80" fill="#8B5A2B"/>
+  <ellipse cx="50" cy="81" rx="25" ry="4" fill="#6E421F"/>
+  <!-- ลำต้นกล้า -->
+  <path d="M50 80 Q48 60 45 45 Q52 60 50 80" fill="#82E0AA"/>
+  <path d="M45 45 Q35 40 30 45 Q38 52 45 45" fill="#2ECC71"/>
+  <path d="M47 52 Q60 45 68 50 Q56 58 47 52" fill="#27AE60"/>
+  <!-- ใบยอด -->
+  <path d="M45 45 Q42 30 50 20 Q55 32 45 45" fill="#58D68D"/>
+  <path d="M45 45 Q55 35 52 22 Q44 32 45 45" fill="#229954"/>
+  <!-- แสงวิ้งๆ -->
+  <circle cx="30" cy="30" r="2" fill="#F1C40F" opacity="0.8"/>
+  <circle cx="70" cy="25" r="3" fill="#F1C40F" opacity="0.6"/>
+</svg>
+`;
+
+// โค้ดกราฟิก SVG ต้นไม้ระดับที่ 2 (ต้นไม้ใหญ่ร่มรื่น มีผลส้มนำโชคสื่อถึงความงอกเงย)
+const svgLevel2 = `
+<svg viewBox="0 0 100 100" width="100%" height="100%">
+  <!-- ดินกระถางธรรมชาติ -->
+  <path d="M15 85 Q50 80 85 85 Q50 92 15 85" fill="#5D4037"/>
+  <!-- ลำต้นใหญ่แข็งแรง -->
+  <path d="M44 85 Q46 65 40 50 Q50 40 52 48 Q52 65 56 85 Z" fill="#795548"/>
+  <path d="M40 50 Q30 40 25 42 Q32 48 41 51" fill="#795548"/>
+  <path d="M50 46 Q65 38 72 42 Q62 48 52 49" fill="#5D4037"/>
+  <!-- พุ่มใบหนานุ่มเป็นมิตร -->
+  <circle cx="35" cy="40" r="16" fill="#4CAF50"/>
+  <circle cx="65" cy="42" r="15" fill="#388E3C"/>
+  <circle cx="50" cy="30" r="18" fill="#81C784"/>
+  <circle cx="48" cy="42" r="14" fill="#2E7D32"/>
+  <!-- ผลไม้/ดอกไม้แห่งความสุข (สีส้ม/ชมพูเรืองรอง) -->
+  <circle cx="32" cy="38" r="3" fill="#FF9800"/>
+  <circle cx="62" cy="45" r="3.5" fill="#FF9800"/>
+  <circle cx="48" cy="24" r="3" fill="#FF9800"/>
+  <circle cx="53" cy="36" r="2.5" fill="#E91E63"/>
+  <circle cx="42" cy="46" r="3" fill="#E91E63"/>
+  <!-- แสงประกายความสุขรอบๆ -->
+  <circle cx="20" cy="20" r="2" fill="#F1C40F"/>
+  <circle cx="82" cy="28" r="2.5" fill="#F1C40F"/>
+</svg>
+`;
+
+const proverbPool = [
+  { start: "หนีเสือ", end: "ปะจระเข้" },
+  { start: "น้ำขึ้น", end: "ให้รีบตัก" },
+  { start: "เข็นครก", end: "ขึ้นภูเขา" },
+  { start: "เดินตามผู้ใหญ่", end: "หมาไม่กัด" }
+];
+
+const exerciseList = [
+  { action: "🙆‍♂️ ชูมือสองข้างขึ้นฟ้า แล้วกำ-แบมือ 10 ครั้ง", desc: "ช่วยกระตุ้นการไหลเวียนโลหิตที่ปลายนิ้วมือ" },
+  { action: "🧘‍♂️ นั่งหลังตรง ยืดไหล่ และหมุนหัวไหล่ไปข้างหลัง 5 ครั้ง", desc: "ช่วยคลายกล้ามเนื้อคอบ่าไหล่ที่ยึดตึง" },
+  { action: "🦶 นั่งบนเก้าอี้ ยกลูกสะบ้า และกระดกปลายเท้าขึ้น-ลง 10 ครั้ง", desc: "ช่วยบริหารข้อเท้าและกล้ามเนื้อขา" }
+];
+
+const fortuneList = [
+  "✨ วันนี้เป็นวันมงคลของคุณ เรื่องขุ่นมัวจะคลี่คลาย สุขภาพจะแข็งแรงสดใส เลขนำโชคของคุณวันนี้คือเลข 【 9 】",
+  "✨ โชคลาภกำลังเดินทางมาหา จิตใจที่เบิกบานจะดึงดูดแต่สิ่งดี ๆ เข้าบ้าน เลขนำโชคของคุณวันนี้คือเลข 【 2 】",
+  "✨ การงานราบรื่น คนรอบตัวคิดถึงและนำข่าวดีมาให้ในเร็ววัน จิตใจผ่องใสไร้ทุกข์ เลขนำโชคของคุณวันนี้คือเลข 【 8 】"
+];
+
+// เรียกใช้งานฟังก์ชันแสดงผลครั้งแรกเมื่อเปิดหน้าจอ
+window.onload = function() {
+  updateUI();
+};
+
+function exitGame(){
+  if(confirm("คุณต้องการปิดหน้าต่างนี้เพื่อไปพักสายตาหรือไม่?")){
+    window.close();
+  }
+}
+
+function switchTab(tabName) {
+  document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tab-view').forEach(view => view.classList.remove('active-view'));
+  document.getElementById(`btn-${tabName}`).classList.add('active');
+  document.getElementById(`view-${tabName}`).classList.add('active-view');
+}
+
+function dailyWatering() {
+  leaves += 2;
+  if(leaves >= maxLeaves) leaves = maxLeaves;
+  updateUI();
+  document.getElementById('daily-water-btn').disabled = true;
+  document.getElementById('daily-water-btn').innerText = "✅ วันนี้รดน้ำเรียบร้อยแล้ว";
+  alert("ขอบคุณที่ช่วยรดน้ำใจครับ! ต้นไม้สดชื่นขึ้นแล้ว (+2 ใบไม้) 💧");
+}
+
+function openGame(type) {
+  const popup = document.getElementById('game-popup');
+  const title = document.getElementById('popup-title');
+  const container = document.getElementById('game-content-area');
+  const actionBtn = document.getElementById('action-btn');
+  
+  actionBtn.disabled = true;
+  popup.style.display = 'flex';
+  container.innerHTML = ''; 
+
+  if(type === 'memory') {
+    title.innerText = '🧠 ต่อคำสุภาษิตพังเพย';
+    actionBtn.innerText = 'เติมพลังความจำเรียบร้อย (+5 ใบไม้)';
+    setupProverbGame(container);
+  } 
+  else if(type === 'health') {
+    title.innerText = '🏃‍♂️ สุ่มกิจกรรมขยับกาย';
+    actionBtn.innerText = 'ทำกิจกรรมกายบริหารเสร็จแล้ว (+5 ใบไม้)';
+    setupExerciseGame(container);
+  } 
+  else if(type === 'motivation') {
+    title.innerText = '🔮 รับคำอวยพรชาร์จพลังใจ';
+    actionBtn.innerText = 'น้อมรับคำอวยพรดวงดี (+5 ใบไม้)';
+    setupFortuneGame(container);
+  }
+}
+
+function setupProverbGame(container) {
+  selectedProverbCard = null;
+  let shuffledPool = [...proverbPool].sort(() => Math.random() - 0.5);
+  let pairs = [shuffledPool[0], shuffledPool[1]];
+  
+  let cardsData = [];
+  pairs.forEach((p, i) => {
+    cardsData.push({ id: `start-${i}`, text: p.start, matchId: `end-${i}`, type: 'start' });
+    cardsData.push({ id: `end-${i}`, text: p.end, matchId: `start-${i}`, type: 'end' });
+  });
+  cardsData.sort(() => Math.random() - 0.5);
+
+  let pIntro = document.createElement('p');
+  pIntro.style.marginBottom = "15px";
+  pIntro.innerText = "จับคู่คำเริ่มต้น และ คำจบของสุภาษิตให้ตรงกันเพื่อวอร์มอัพสมอง";
+  container.appendChild(pIntro);
+
+  let grid = document.createElement('div');
+  grid.className = 'proverb-grid';
+  
+  cardsData.forEach(data => {
+    let card = document.createElement('div');
+    card.className = 'proverb-card';
+    card.id = data.id;
+    card.innerText = data.text;
+    card.onclick = function() { selectProverb(card, data, pairs.length); };
+    grid.appendChild(card);
+  });
+  
+  container.appendChild(grid);
+}
+
+function selectProverb(card, data, totalPairs) {
+  if (card.classList.contains('matched')) return;
+
+  if (!selectedProverbCard) {
+    selectedProverbCard = { card, data };
+    card.classList.add('selected');
+  } else {
+    if (selectedProverbCard.card.id === card.id) {
+      card.classList.remove('selected');
+      selectedProverbCard = null;
+      return;
+    }
+
+    if (selectedProverbCard.data.matchId === data.id) {
+      selectedProverbCard.card.classList.remove('selected');
+      selectedProverbCard.card.classList.add('matched');
+      card.classList.add('matched');
+      selectedProverbCard = null;
+
+      let matchedCount = document.querySelectorAll('.proverb-card.matched').length;
+      if (matchedCount === totalPairs * 2) {
+        document.getElementById('action-btn').disabled = false;
+      }
+    } else {
+      selectedProverbCard.card.classList.remove('selected');
+      selectedProverbCard = null;
+    }
+  }
+}
+
+function setupExerciseGame(container) {
+  let view = document.createElement('div');
+  view.innerHTML = `
+    <div class="wheel-box" id="wheel-emo">🎡</div>
+    <p id="exe-txt" style="font-weight:bold; font-size:18px; margin: 10px 0; color:#333;">กดปุ่มด้านล่างเพื่อเริ่มสุ่มท่าบริหารร่างกายเบาๆ</p>
+    <button class="popup-btn" style="background:#5dade2; margin-top:5px;" id="spin-btn" onclick="spinExerciseWheel()">กดเพื่อสุ่มวงล้อ</button>
+  `;
+  container.appendChild(view);
+}
+
+function spinExerciseWheel() {
+  let wheel = document.getElementById('wheel-emo');
+  let spinBtn = document.getElementById('spin-btn');
+  wheel.style.animationName = 'spin';
+  spinBtn.disabled = true;
+
+  setTimeout(() => {
+    wheel.style.animationName = 'none';
+    const randomExe = exerciseList[Math.floor(Math.random() * exerciseList.length)];
+    
+    document.getElementById('exe-txt').innerHTML = `
+      <span style="color:#27ae60; font-size:20px;">★ ได้ท่าบริหาร:</span><br>
+      <span style="font-size:22px; color:#111;">${randomExe.action}</span><br>
+      <small style="color:#666; font-weight:normal; display:block; margin-top:8px;">(${randomExe.desc})</small>
+    `;
+    wheel.innerText = "💪";
+    document.getElementById('action-btn').disabled = false;
+  }, 1200);
+}
+
+function setupFortuneGame(container) {
+  let view = document.createElement('div');
+  view.innerHTML = `
+    <div style="font-size:70px; cursor:pointer;" id="stick-emo" onclick="shakeFortune()">🪵</div>
+    <p id="fortune-txt" style="font-size:18px; font-weight:bold; margin-top:10px; color:#c0392b;">👉 แตะที่กระบอกเซียมซีเพื่อเสี่ยงทายรับพลังบวก</p>
+  `;
+  container.appendChild(view);
+}
+
+function shakeFortune() {
+  let stick = document.getElementById('stick-emo');
+  stick.style.transform = 'rotate(15deg)';
+  
+  setTimeout(() => { stick.style.transform = 'rotate(-15deg)'; }, 150);
+  setTimeout(() => { stick.style.transform = 'rotate(10deg)'; }, 300);
+  
+  setTimeout(() => {
+    stick.style.transform = 'none';
+    const randomFortune = fortuneList[Math.floor(Math.random() * fortuneList.length)];
+    stick.innerText = "📜";
+    document.getElementById('fortune-txt').innerHTML = `<span style="color:#222; font-weight:normal;">${randomFortune}</span>`;
+    document.getElementById('action-btn').disabled = false;
+  }, 600);
+}
+
+function closePopup() {
+  document.getElementById('game-popup').style.display = 'none';
+}
+
+function completeActivity() {
+  leaves += 5;
+  if(leaves >= maxLeaves) {
+    leaves = maxLeaves;
+    currentLevel = 2;
+  }
+  updateUI();
+  closePopup();
+}
+
+// อัปเดตส่วนแสดงผลกราฟิกต้นไม้ตามเลเวล
+function updateUI() {
+  document.getElementById('leaf-count').innerText = `${leaves} / ${maxLeaves} ใบ`;
+  const percentage = (leaves / maxLeaves) * 100;
+  document.getElementById('progress-bar').style.width = `${percentage}%`;
+  
+  if(currentLevel === 2) {
+    document.getElementById('tree-graphic').innerHTML = svgLevel2;
+    document.getElementById('tree-level').innerText = 'เลเวลต้นไม้ของคุณ: ระดับ 2 (โตงดงาม)';
+    document.getElementById('garden-tree-graphic').innerHTML = svgLevel2;
+    document.getElementById('garden-title').innerText = 'ต้นไม้ชุบชูใจที่สมบูรณ์';
+    document.getElementById('badge-2').style.opacity = "1";
+    document.getElementById('badge-2').style.background = "#e7f7d8";
+  } else {
+    document.getElementById('tree-graphic').innerHTML = svgLevel1;
+    document.getElementById('tree-level').innerText = 'เลเวลต้นไม้ของคุณ: ระดับ 1';
+    document.getElementById('garden-tree-graphic').innerHTML = svgLevel1;
+    document.getElementById('garden-title').innerText = 'ต้นกล้าแห่งความสุข';
+    document.getElementById('badge-2').style.opacity = "0.5";
+    document.getElementById('badge-2').style.background = "#f9f9f9";
+  }
+}
+</script>
+
+</body>
+</html>
